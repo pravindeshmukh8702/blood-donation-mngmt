@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  # PHP Apache Web Server
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bbdms-web
+    ports:
+      - "8080:80"
+    volumes:
+      - ./bbdms:/var/www/html
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_USER=${DB_USER:-bbdms_user}
+      - DB_PASS=${DB_PASS:-bbdms_password}
+      - DB_NAME=${DB_NAME:-bbdms}
+    networks:
+      - bbdms-network
+    restart: unless-stopped
+
+  # MySQL Database
+  db:
+    image: mysql:8.0
+    container_name: bbdms-db
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-rootpassword}
+      - MYSQL_DATABASE=${DB_NAME:-bbdms}
+      - MYSQL_USER=${DB_USER:-bbdms_user}
+      - MYSQL_PASSWORD=${DB_PASS:-bbdms_password}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - "./SQL File/bbdms.sql:/docker-entrypoint-initdb.d/bbdms.sql:ro"
+    networks:
+      - bbdms-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-rootpassword}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # phpMyAdmin
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: bbdms-phpmyadmin
+    ports:
+      - "8081:80"
+    environment:
+      - PMA_HOST=db
+      - PMA_PORT=3306
+      - PMA_USER=${DB_USER:-bbdms_user}
+      - PMA_PASSWORD=${DB_PASS:-bbdms_password}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-rootpassword}
+    depends_on:
+      - db
+    networks:
+      - bbdms-network
+    restart: unless-stopped
+
+networks:
+  bbdms-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+    driver: local
+
