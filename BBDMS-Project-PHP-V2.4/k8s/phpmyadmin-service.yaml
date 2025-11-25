@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: bbdms-phpmyadmin
+  namespace: bbdms
+spec:
+  selector:
+    app: bbdms-phpmyadmin
+  ports:
+    - port: 80
+      targetPort: 80
+      name: http
+  type: ClusterIP
+

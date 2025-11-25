@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bbdms-phpmyadmin
+  namespace: bbdms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bbdms-phpmyadmin
+  template:
+    metadata:
+      labels:
+        app: bbdms-phpmyadmin
+    spec:
+      containers:
+        - name: phpmyadmin
+          image: phpmyadmin/phpmyadmin:5.2.1
+          ports:
+            - containerPort: 80
+              name: http
+          env:
+            - name: PMA_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: bbdms-app-config
+                  key: DB_HOST
+            - name: PMA_USER
+              valueFrom:
+                secretKeyRef:
+                  name: bbdms-db-secret
+                  key: DB_USER
+            - name: PMA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: bbdms-db-secret
+                  key: DB_PASS
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: bbdms-db-secret
+                  key: MYSQL_ROOT_PASSWORD
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
+

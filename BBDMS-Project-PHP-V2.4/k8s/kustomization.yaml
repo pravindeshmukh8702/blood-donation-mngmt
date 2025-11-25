@@ -1,0 +1,14 @@
+namespace: bbdms
+resources:
+  - namespace.yaml
+  - configmap-app.yaml
+  - secret-db-sample.yaml
+  - secret-aws-sample.yaml
+  - mysql-service.yaml
+  - mysql-statefulset.yaml
+  - web-deployment.yaml
+  - web-service.yaml
+  - phpmyadmin-deployment.yaml
+  - phpmyadmin-service.yaml
+  - ingress.yaml
+

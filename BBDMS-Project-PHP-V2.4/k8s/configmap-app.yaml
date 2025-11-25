@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bbdms-app-config
+  namespace: bbdms
+data:
+  DB_HOST: bbdms-mysql
+  DB_NAME: bbdms
+  AWS_REGION: us-east-1
+  AWS_S3_BUCKET: change-me-bucket
+  AWS_S3_PREFIX: uploads
+  AWS_SYNC_INTERVAL_SECONDS: "60"
+  PHP_UPLOADS_DIR: /var/www/html/images/uploads
+  PHPMYADMIN_HOST: bbdms-mysql
+
